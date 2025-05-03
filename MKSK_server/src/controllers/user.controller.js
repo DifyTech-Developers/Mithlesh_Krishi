@@ -16,7 +16,7 @@ exports.register = async (req, res) => {
   try {
     const { phoneNumber, password, name, languagePreference , village } = req.body;
 
-    village = village.toLowerCase(); // Convert village to lowercase
+   const Newvillage = village.toLowerCase(); // Convert village to lowercase
     
     const existingUser = await User.findOne({ phoneNumber });
     if (existingUser) {
@@ -30,7 +30,7 @@ exports.register = async (req, res) => {
       phoneNumber,
       password: hashedPassword,
       name,
-      village,
+      village: Newvillage, // Use the lowercase village name
       languagePreference: languagePreference || 'en'
     });
 
