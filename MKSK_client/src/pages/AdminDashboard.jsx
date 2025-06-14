@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Container, Box, Typography, TextField, Button, Tab, Tabs, Paper, Table, 
+import {
+  Container, Box, Typography, TextField, Button, Tab, Tabs, Paper, Table,
   TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton,
   Dialog, DialogTitle, DialogContent, DialogActions, FormControl, InputLabel,
-  Select, MenuItem, Alert, useTheme, Chip, CircularProgress, Grid, InputAdornment } from '@mui/material';
+  Select, MenuItem, Alert, useTheme, Chip, CircularProgress, Grid, InputAdornment
+} from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
@@ -13,15 +15,17 @@ import InfoIcon from '@mui/icons-material/Info';
 import AddIcon from '@mui/icons-material/Add';
 import ImageIcon from '@mui/icons-material/Image';
 import * as XLSX from 'xlsx';
-import { getUserProfile, getAllUsers, deleteUser, deleteAnnouncement, 
-  getPurchases, updatePurchaseStatus, broadcastAnnouncement, sendPaymentReminders, updateUserRole, createPurchase, getAllProducts , createProduct} from '../server.api';
+import {
+  getUserProfile, getAllUsers, deleteUser, deleteAnnouncement,
+  getPurchases, updatePurchaseStatus, broadcastAnnouncement, sendPaymentReminders, updateUserRole, createPurchase, getAllProducts, createProduct
+} from '../server.api';
 import { useLoading } from '../hooks/useLoading';
 import { useFeedback } from '../components/Feedback';
 import { useNavigate } from 'react-router-dom';
 
 const AdminDashboard = () => {
   const [purchaseSearchQuery, setPurchaseSearchQuery] = useState('');
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useState(3);
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [announcements, setAnnouncements] = useState([]);
@@ -100,7 +104,7 @@ const AdminDashboard = () => {
         getPurchases(),
         getAllProducts()
       ]);
-      
+
       if (profileRes?.data?.role !== 'admin') {
         showFeedback('Access denied. Admin privileges required.', 'error');
         navigate('/');
@@ -431,11 +435,11 @@ const AdminDashboard = () => {
 
   const filteredUsers = users.filter(user => {
     if (!searchQuery.trim()) return true;
-    
+
     const searchLower = searchQuery.toLowerCase().trim();
     const searchTerms = searchLower.split(' ').filter(term => term.length > 0);
-    
-    return searchTerms.some(term => 
+
+    return searchTerms.some(term =>
       (user.name?.toLowerCase().includes(term)) ||
       (user.phoneNumber?.toLowerCase().includes(term)) ||
       (user.village?.toLowerCase().includes(term)) ||
@@ -469,8 +473,8 @@ const AdminDashboard = () => {
     // First apply search query filter
     const searchLower = purchaseSearchQuery.toLowerCase().trim();
     const searchTerms = searchLower.split(' ').filter(term => term.length > 0);
-    
-    const matchesSearch = !purchaseSearchQuery || searchTerms.some(term => 
+
+    const matchesSearch = !purchaseSearchQuery || searchTerms.some(term =>
       (purchase.userId?.name?.toLowerCase().includes(term)) ||
       (purchase.village?.toLowerCase().includes(term)) ||
       (purchase.Payment_status?.toLowerCase().includes(term)) ||
@@ -478,19 +482,19 @@ const AdminDashboard = () => {
     );
 
     // Then apply other filters
-    const matchesDate = !purchaseFilters.date || 
+    const matchesDate = !purchaseFilters.date ||
       new Date(purchase.purchaseDate).toLocaleDateString() === purchaseFilters.date;
-    
-    const matchesCustomer = !purchaseFilters.customer || 
+
+    const matchesCustomer = !purchaseFilters.customer ||
       purchase.userId?.name?.toLowerCase().includes(purchaseFilters.customer.toLowerCase());
-    
-    const matchesVillage = !purchaseFilters.village || 
+
+    const matchesVillage = !purchaseFilters.village ||
       purchase.village?.toLowerCase().includes(purchaseFilters.village.toLowerCase());
-    
-    const matchesStatus = !purchaseFilters.status || 
+
+    const matchesStatus = !purchaseFilters.status ||
       purchase.Payment_status === purchaseFilters.status;
-    
-    const matchesAmount = !purchaseFilters.amountRange || 
+
+    const matchesAmount = !purchaseFilters.amountRange ||
       (purchaseFilters.amountRange === 'low' && purchase.totalAmount < 1000) ||
       (purchaseFilters.amountRange === 'medium' && purchase.totalAmount >= 1000 && purchase.totalAmount < 5000) ||
       (purchaseFilters.amountRange === 'high' && purchase.totalAmount >= 5000);
@@ -500,13 +504,13 @@ const AdminDashboard = () => {
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Paper sx={{ p: 3, backgroundColor: secondaryColor }}>
-        <Tabs 
-          value={tab} 
-          onChange={(e, newValue) => setTab(newValue)} 
-          sx={{ 
-            mb: 3, 
-            '& .MuiTab-root': { 
+      <Paper sx={{ p: 3, backgroundColor: secondaryColor }}>          <Box sx={{ display: 'flex', width: '100%', mb: 3 }}>
+        <Tabs
+          value={tab}
+          onChange={(e, newValue) => setTab(newValue)}
+          sx={{
+            mb: 3,
+            '& .MuiTab-root': {
               color: primaryColor,
               '&.Mui-selected': {
                 color: primaryColor,
@@ -518,16 +522,17 @@ const AdminDashboard = () => {
             }
           }}
         >
-          <Tab label="Profile" />
-          <Tab label="Announcements" />
-          <Tab label="Users" />
-          <Tab label="Purchases" />
-          <Tab label="Products" />
+          <Tab label="Profile" value={0} sx={{ display: { xs: 'none', sm: 'flex' } }} />
+          <Tab label="Announcements" value={1} sx={{ display: { xs: 'none', sm: 'flex' } }} />
+          <Tab label="Users" value={2} sx={{ display: { xs: 'none', sm: 'flex' } }} />
+          <Tab label="Purchases" value={3} />
+          <Tab label="Products" value={4} sx={{ display: { xs: 'none', sm: 'flex' } }} />
         </Tabs>
+      </Box>
 
         {/* Profile Section */}
         {tab === 0 && profile && (
-          <Box>
+          <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
             <Typography variant="h5" sx={{ color: primaryColor, mb: 2, fontWeight: 600 }}>Admin Profile</Typography>
             <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
               <Typography><strong>Name:</strong> {profile.name}</Typography>
@@ -540,9 +545,9 @@ const AdminDashboard = () => {
 
         {/* Announcements Section */}
         {tab === 1 && (
-          <Box>
+          <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
             <Typography variant="h5" sx={{ color: primaryColor, mb: 2, fontWeight: 600 }}>Announcements</Typography>
-            
+
             {/* Create New Announcement */}
             <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
               <Typography variant="h6" sx={{ mb: 2 }}>Create New Announcement</Typography>
@@ -629,13 +634,11 @@ const AdminDashboard = () => {
               </Paper>
             )}
           </Box>
-        )}
-
-        {/* Users Section */}
+        )}        {/* Users Section */}
         {tab === 2 && (
-          <Box>
+          <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
             <Typography variant="h5" sx={{ color: primaryColor, mb: 2, fontWeight: 600 }}>Users</Typography>
-            
+
             {/* Search Bar */}
             <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
               <TextField
@@ -709,14 +712,14 @@ const AdminDashboard = () => {
                             />
                           </TableCell>
                           <TableCell>
-                            <IconButton 
+                            <IconButton
                               onClick={() => handleViewUserPurchases(user)}
                               sx={{ color: primaryColor }}
                               title="View Purchases"
                             >
                               <VisibilityIcon />
                             </IconButton>
-                            <IconButton 
+                            <IconButton
                               onClick={() => {
                                 setSelectedUser(user);
                                 setSelectedRole(user.role);
@@ -727,7 +730,7 @@ const AdminDashboard = () => {
                             >
                               <AdminPanelSettingsIcon />
                             </IconButton>
-                            <IconButton 
+                            <IconButton
                               onClick={() => {
                                 setSelectedUser(user);
                                 setDeleteConfirmDialog(true);
@@ -751,9 +754,17 @@ const AdminDashboard = () => {
         {/* Purchases Section */}
         {tab === 3 && (
           <Box>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-              <Typography variant="h5" sx={{ color: primaryColor, fontWeight: 600 }}>Purchases</Typography>
-              <Box>
+            <Box sx={{
+              display: 'flex',
+              flexDirection: { xs: 'column', sm: 'row' },
+              justifyContent: 'space-between',
+              alignItems: { xs: 'stretch', sm: 'center' },
+              mb: 3
+            }}>
+              <Typography variant="h5" sx={{ color: primaryColor, fontWeight: 600, mb: { xs: 2, sm: 0 } }}>Purchases</Typography>
+
+              {/* Action Buttons - Hidden on Mobile */}
+              <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
                 <input
                   type="file"
                   accept=".xlsx,.xls"
@@ -800,217 +811,315 @@ const AdminDashboard = () => {
                 </Button>
               </Box>
             </Box>
-            
-            {/* Search Bar */}
-            <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
-              <TextField
-                fullWidth
-                variant="outlined"
-                placeholder="Search purchases by customer name, village, product name, or status..."
-                value={purchaseSearchQuery}
-                onChange={(e) => setPurchaseSearchQuery(e.target.value)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon />
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    '&:hover fieldset': {
-                      borderColor: primaryColor,
+
+            {/* Enhanced Search Bar */}
+            <Paper elevation={2} sx={{ p: 2, mb: 3 }}>
+              {/* Filters first */}
+
+
+              {/* Search bar after filters */}
+              <Box sx={{ mt: 2 }}>
+                <Typography variant="subtitle2" sx={{ mb: 1 }}>Search Purchases</Typography>
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  placeholder="Search by customer name, village, or SN..."
+                  value={purchaseSearchQuery}
+                  onChange={(e) => setPurchaseSearchQuery(e.target.value)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: 2,
+                      '&:hover fieldset': {
+                        borderColor: primaryColor,
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: primaryColor,
+                      },
                     },
-                    '&.Mui-focused fieldset': {
-                      borderColor: primaryColor,
-                    },
-                  },
-                }}
-              />
-              {purchaseSearchQuery && (
-                <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-                  Found {filteredPurchases.length} {filteredPurchases.length === 1 ? 'purchase' : 'purchases'} matching your search
-                </Typography>
-              )}
-            </Paper>
-            
-            {/* Filters */}
-            <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
-              <Typography variant="h6" sx={{ mb: 2 }}>Filters</Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6} md={4}>
-                  <FormControl fullWidth>
-                    <InputLabel>Date</InputLabel>
-                    <Select
-                      value={purchaseFilters.date}
-                      onChange={(e) => setPurchaseFilters({ ...purchaseFilters, date: e.target.value })}
-                      label="Date"
-                    >
-                      <MenuItem value="">All Dates</MenuItem>
-                      {[...new Set(purchases.map(p => new Date(p.purchaseDate).toLocaleDateString()))].map(date => (
-                        <MenuItem key={date} value={date}>{date}</MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <FormControl fullWidth>
-                    <InputLabel>Customer</InputLabel>
-                    <Select
-                      value={purchaseFilters.customer}
-                      onChange={(e) => setPurchaseFilters({ ...purchaseFilters, customer: e.target.value })}
-                      label="Customer"
-                    >
-                      <MenuItem value="">All Customers</MenuItem>
-                      {[...new Set(purchases.map(p => p.userId?.name).filter(Boolean))].map(name => (
-                        <MenuItem key={name} value={name}>{name}</MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <FormControl fullWidth>
-                    <InputLabel>Village</InputLabel>
-                    <Select
-                      value={purchaseFilters.village}
-                      onChange={(e) => setPurchaseFilters({ ...purchaseFilters, village: e.target.value })}
-                      label="Village"
-                    >
-                      <MenuItem value="">All Villages</MenuItem>
-                      {[...new Set(purchases.map(p => p.village).filter(Boolean))].map(village => (
-                        <MenuItem key={village} value={village}>{village}</MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <FormControl fullWidth>
-                    <InputLabel>Payment Status</InputLabel>
-                    <Select
-                      value={purchaseFilters.status}
-                      onChange={(e) => setPurchaseFilters({ ...purchaseFilters, status: e.target.value })}
-                      label="Payment Status"
-                    >
-                      <MenuItem value="">All Statuses</MenuItem>
-                      <MenuItem value="pending">Pending</MenuItem>
-                      <MenuItem value="completed">Completed</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <FormControl fullWidth>
-                    <InputLabel>Amount Range</InputLabel>
-                    <Select
-                      value={purchaseFilters.amountRange}
-                      onChange={(e) => setPurchaseFilters({ ...purchaseFilters, amountRange: e.target.value })}
-                      label="Amount Range"
-                    >
-                      <MenuItem value="">All Amounts</MenuItem>
-                      <MenuItem value="low">Low (Below ₹1000)</MenuItem>
-                      <MenuItem value="medium">Medium (₹1000 - ₹5000)</MenuItem>
-                      <MenuItem value="high">High (Above ₹5000)</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <Button
-                    variant="outlined"
-                    onClick={() => setPurchaseFilters({
-                      date: '',
-                      customer: '',
-                      village: '',
-                      status: '',
-                      amountRange: ''
-                    })}
-                    fullWidth
-                    sx={{ height: '56px' }}
-                  >
-                    Clear Filters
-                  </Button>
-                </Grid>
-              </Grid>
+                  }}
+                />
+              </Box>
             </Paper>
 
-            {/* Purchases Table */}
-            <Paper elevation={2} sx={{ p: 3 }}>
-              <TableContainer component={Paper} sx={{ mt: 2 }}>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>SN</TableCell>
-                      <TableCell>Date</TableCell>
-                      <TableCell>Customer</TableCell>
-                      <TableCell>Village</TableCell>
-                      <TableCell>Total Amount</TableCell>
-                      <TableCell>Deposit</TableCell>
-                      <TableCell>Remaining</TableCell>
-                      <TableCell>Status</TableCell>
-                      <TableCell>Actions</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {loading ? (
+            {/* Mobile-friendly purchase list */}
+            <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+              {/* Mobile Payment Status Filter */}
+              <Box sx={{ mb: 2 }}>
+                <FormControl fullWidth variant="outlined" sx={{ bgcolor: 'background.paper', borderRadius: 1 }}>
+                  <InputLabel>Payment Status</InputLabel>
+                  <Select
+                    value={purchaseFilters.status}
+                    onChange={(e) => setPurchaseFilters({ ...purchaseFilters, status: e.target.value })}
+                    label="Payment Status"
+                  >
+                    <MenuItem value="">All Statuses</MenuItem>
+                    <MenuItem value="pending">Pending</MenuItem>
+                    <MenuItem value="completed">Completed</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
+
+              {loading ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+                  <CircularProgress />
+                </Box>
+              ) : filteredPurchases.length === 0 ? (
+                <Paper elevation={2} sx={{ p: 3, textAlign: 'center' }}>
+                  <Typography color="text.secondary">No purchases found</Typography>
+                </Paper>
+              ) : (
+                filteredPurchases.map((purchase) => (
+                  <Paper
+                    key={purchase._id}
+                    elevation={3}
+                    sx={{
+                      p: 2.5,
+                      mb: 2.5,
+                      borderRadius: 3,
+                      backgroundColor: 'background.paper',
+                      border: '1px solid',
+                      borderColor: 'divider',
+                      position: 'relative',
+                      overflow: 'hidden'
+                    }}
+                  >
+                    {/* SN and Status Section */}
+                    <Box sx={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      mb: 2,
+                      backgroundColor: theme.palette.background.default,
+                      borderRadius: 2,
+                      p: 1.5,
+                    }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: 600,
+                          color: primaryColor,
+                        }}
+                      >
+                        SN: {purchase.SN || 'N/A'}
+                      </Typography>
+                      <Chip
+                        label={purchase.Payment_status}
+                        color={getPaymentStatusColor(purchase.Payment_status)}
+                        sx={{
+                          fontWeight: 500,
+                          borderRadius: '8px',
+                          '& .MuiChip-label': {
+                            px: 2
+                          }
+                        }}
+                      />
+                    </Box>
+
+                    {/* Customer Info Section */}
+                    <Box sx={{ mb: 2 }}>
+                      <Typography variant="h6" sx={{
+                        fontWeight: 600,
+                        color: primaryColor,
+                        mb: 0.5
+                      }}>
+                        {purchase.userId?.name || 'Unknown Customer'}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: 'text.secondary',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 0.5
+                        }}
+                      >
+                        🏠 {purchase.village || 'N/A'}
+                      </Typography>
+                    </Box>
+
+                    {/* Payment Details Section */}
+                    <Box sx={{
+                      backgroundColor: theme.palette.background.default,
+                      borderRadius: 2,
+                      p: 1.5,
+                      mb: 2
+                    }}>
+                      <Grid container spacing={2}>
+                        <Grid item xs={6}>
+                          <Typography variant="caption" color="text.secondary">
+                            Total Amount
+                          </Typography>
+                          <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                            ₹{purchase.totalAmount}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography variant="caption" color="text.secondary">
+                            Deposit
+                          </Typography>
+                          <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                            ₹{purchase.depositAmount}
+                          </Typography>
+                        </Grid>
+                      </Grid>
+                    </Box>
+
+                    {/* Date Section */}
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: 'text.secondary',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 0.5,
+                        mb: 2
+                      }}
+                    >
+                      📅 {new Date(purchase.purchaseDate).toLocaleDateString()}
+                    </Typography>
+
+                    {/* Action Buttons */}
+                    <Box sx={{
+                      display: 'flex',
+                      gap: 1.5,
+                      mt: 1
+                    }}>
+                      <Button
+                        fullWidth
+                        variant="contained"
+                        onClick={() => {
+                          setSelectedPurchase(purchase);
+                          setDepositDialog(true);
+                        }}
+                        sx={{
+                          py: 1.5,
+                          backgroundColor: primaryColor,
+                          color: 'white',
+                          '&:hover': {
+                            backgroundColor: theme.palette.primary.dark,
+                          },
+                          borderRadius: 2,
+                          boxShadow: 2,
+                          textTransform: 'none',
+                          fontWeight: 600
+                        }}
+                      >
+                        Update Payment
+                      </Button>
+                      <Button
+                        fullWidth
+                        variant="outlined"
+                        onClick={() => handleShowProductDetails(purchase)}
+                        sx={{
+                          py: 1.5,
+                          borderColor: primaryColor,
+                          color: primaryColor,
+                          '&:hover': {
+                            borderColor: theme.palette.primary.dark,
+                            backgroundColor: 'rgba(0, 0, 0, 0.04)'
+                          },
+                          borderRadius: 2,
+                          textTransform: 'none',
+                          fontWeight: 600
+                        }}
+                      >
+                        View Details
+                      </Button>
+                    </Box>
+                  </Paper>
+                ))
+              )}
+            </Box>
+
+            {/* Desktop table view */}
+            <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+              <Paper elevation={2} sx={{ p: 3 }}>
+                <TableContainer component={Paper} sx={{ mt: 2 }}>
+                  <Table>
+                    <TableHead>
                       <TableRow>
-                        <TableCell colSpan={9} align="center" sx={{ py: 3 }}>
-                          <CircularProgress size={24} />
-                        </TableCell>
+                        <TableCell>SN</TableCell>
+                        <TableCell>Date</TableCell>
+                        <TableCell>Customer</TableCell>
+                        <TableCell>Village</TableCell>
+                        <TableCell>Total Amount</TableCell>
+                        <TableCell>Deposit</TableCell>
+                        <TableCell>Remaining</TableCell>
+                        <TableCell>Status</TableCell>
+                        <TableCell>Actions</TableCell>
                       </TableRow>
-                    ) : filteredPurchases.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={9} align="center" sx={{ py: 3 }}>
-                          <Typography color="text.secondary">No purchases found</Typography>
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      filteredPurchases.map((purchase) => (
-                        <TableRow key={purchase._id}>
-                          <TableCell>{purchase.SN}</TableCell>
-                          <TableCell>{new Date(purchase.purchaseDate).toLocaleDateString()}</TableCell>
-                          <TableCell>{purchase.name}</TableCell>
-                          <TableCell>{purchase.village || 'Not specified'}</TableCell>
-                          <TableCell>₹{purchase.totalAmount}</TableCell>
-                          <TableCell>₹{purchase.depositAmount}</TableCell>
-                          <TableCell>₹{purchase.remainingAmount}</TableCell>
-                          <TableCell>
-                            <Chip
-                              label={purchase.Payment_status}
-                              color={getPaymentStatusColor(purchase.Payment_status)}
-                              size="small"
-                              sx={{ fontWeight: 500 }}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <IconButton 
-                              onClick={() => handleShowProductDetails(purchase)}
-                              sx={{ color: primaryColor }}
-                              title="View Product Details"
-                            >
-                              <InfoIcon />
-                            </IconButton>
-                            <IconButton 
-                              onClick={() => {
-                                setSelectedPurchase(purchase);
-                                setDepositAmount(purchase.depositAmount.toString());
-                                setDepositDialog(true);
-                              }}
-                              sx={{ color: primaryColor }}
-                            >
-                              <EditIcon />
-                            </IconButton>
+                    </TableHead>
+                    <TableBody>
+                      {loading ? (
+                        <TableRow>
+                          <TableCell colSpan={9} align="center" sx={{ py: 3 }}>
+                            <CircularProgress size={24} />
                           </TableCell>
                         </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Paper>
+                      ) : filteredPurchases.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={9} align="center" sx={{ py: 3 }}>
+                            <Typography color="text.secondary">No purchases found</Typography>
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        filteredPurchases.map((purchase) => (
+                          <TableRow key={purchase._id}>
+                            <TableCell>{purchase.SN}</TableCell>
+                            <TableCell>{new Date(purchase.purchaseDate).toLocaleDateString()}</TableCell>
+                            <TableCell>{purchase.name}</TableCell>
+                            <TableCell>{purchase.village || 'Not specified'}</TableCell>
+                            <TableCell>₹{purchase.totalAmount}</TableCell>
+                            <TableCell>₹{purchase.depositAmount}</TableCell>
+                            <TableCell>₹{purchase.remainingAmount}</TableCell>
+                            <TableCell>
+                              <Chip
+                                label={purchase.Payment_status}
+                                color={getPaymentStatusColor(purchase.Payment_status)}
+                                size="small"
+                                sx={{ fontWeight: 500 }}
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <IconButton
+                                onClick={() => handleShowProductDetails(purchase)}
+                                sx={{ color: primaryColor }}
+                                title="View Product Details"
+                              >
+                                <InfoIcon />
+                              </IconButton>
+                              <IconButton
+                                onClick={() => {
+                                  setSelectedPurchase(purchase);
+                                  setDepositAmount(purchase.depositAmount.toString());
+                                  setDepositDialog(true);
+                                }}
+                                sx={{ color: primaryColor }}
+                              >
+                                <EditIcon />
+                              </IconButton>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Paper>
+            </Box>
           </Box>
         )}
 
         {/* Products Section */}
         {tab === 4 && (
-          <Box>
+          <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
               <Typography variant="h5" sx={{ color: primaryColor, fontWeight: 600 }}>Products</Typography>
               <Button
@@ -1091,14 +1200,14 @@ const AdminDashboard = () => {
                           </TableCell>
                           <TableCell>
                             <IconButton
-                              onClick={() => {/* Handle edit */}}
+                              onClick={() => {/* Handle edit */ }}
                               sx={{ color: primaryColor }}
                               title="Edit Product"
                             >
                               <EditIcon />
                             </IconButton>
                             <IconButton
-                              onClick={() => {/* Handle delete */}}
+                              onClick={() => {/* Handle delete */ }}
                               sx={{ color: theme.palette.error.main }}
                               title="Delete Product"
                             >
@@ -1117,8 +1226,8 @@ const AdminDashboard = () => {
       </Paper>
 
       {/* Dialogs */}
-      <Dialog 
-        open={depositDialog} 
+      <Dialog
+        open={depositDialog}
         onClose={() => setDepositDialog(false)}
         PaperProps={{
           elevation: 2
@@ -1153,8 +1262,8 @@ const AdminDashboard = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDepositDialog(false)}>Cancel</Button>
-          <Button 
-            onClick={handleUpdatePurchase} 
+          <Button
+            onClick={handleUpdatePurchase}
             variant="contained"
             sx={{ bgcolor: primaryColor, '&:hover': { bgcolor: theme.palette.admin.dark } }}
           >
@@ -1163,8 +1272,8 @@ const AdminDashboard = () => {
         </DialogActions>
       </Dialog>
 
-      <Dialog 
-        open={roleDialog} 
+      <Dialog
+        open={roleDialog}
         onClose={() => setRoleDialog(false)}
         PaperProps={{
           elevation: 2
@@ -1190,7 +1299,7 @@ const AdminDashboard = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setRoleDialog(false)}>Cancel</Button>
-          <Button 
+          <Button
             onClick={handleUpdateUserRole}
             variant="contained"
             sx={{ bgcolor: primaryColor, '&:hover': { bgcolor: theme.palette.admin.dark } }}
@@ -1200,8 +1309,8 @@ const AdminDashboard = () => {
         </DialogActions>
       </Dialog>
 
-      <Dialog 
-        open={deleteConfirmDialog} 
+      <Dialog
+        open={deleteConfirmDialog}
         onClose={() => setDeleteConfirmDialog(false)}
         PaperProps={{
           elevation: 2
@@ -1217,9 +1326,9 @@ const AdminDashboard = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDeleteConfirmDialog(false)}>Cancel</Button>
-          <Button 
-            onClick={() => handleDeleteUser(selectedUser?._id)} 
-            variant="contained" 
+          <Button
+            onClick={() => handleDeleteUser(selectedUser?._id)}
+            variant="contained"
             color="error"
           >
             Delete
@@ -1333,13 +1442,13 @@ const AdminDashboard = () => {
                   </Paper>
                 </Grid>
               </Grid>
-              
+
               {reminderStats.stats.messagesFailed > 0 && (
                 <Alert severity="warning" sx={{ mt: 2 }}>
                   Some reminders failed to send. Please check the failed numbers and try again.
                 </Alert>
               )}
-              
+
               <Typography variant="body2" sx={{ mt: 2, color: 'text.secondary' }}>
                 Total Users: {reminderStats.stats.totalUsers}
               </Typography>
@@ -1396,8 +1505,8 @@ const AdminDashboard = () => {
                 <InputLabel>Village</InputLabel>
                 <Select
                   value={newPurchase.village}
-                  onChange={(e) => setNewPurchase({ 
-                    ...newPurchase, 
+                  onChange={(e) => setNewPurchase({
+                    ...newPurchase,
                     village: e.target.value,
                     newVillage: e.target.value === 'OTHER' ? '' : undefined
                   })}
@@ -1414,9 +1523,9 @@ const AdminDashboard = () => {
                   fullWidth
                   label="Enter New Village"
                   value={newPurchase.newVillage || ""}
-                  onChange={(e) => setNewPurchase({ 
-                    ...newPurchase, 
-                    newVillage: e.target.value 
+                  onChange={(e) => setNewPurchase({
+                    ...newPurchase,
+                    newVillage: e.target.value
                   })}
                   sx={{ mt: 2 }}
                 />

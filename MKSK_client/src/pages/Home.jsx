@@ -8,6 +8,7 @@ import { format } from 'date-fns';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginSuccess } from '../store/slices/authSlice';
 import { setProducts } from '../store/slices/productsSlice';
+import { useNavigate } from 'react-router-dom';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -39,6 +40,7 @@ const Home = () => {
   const dispatch = useDispatch();
   const products = useSelector((state) => state.products.filteredItems || []);
   const [announcements, setAnnouncements] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -66,6 +68,13 @@ const Home = () => {
     };
     UserLoginViaLocalhost();
   }, [dispatch]);
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user.role === 'admin') {
+      navigate('/admin')
+    }
+  }, [])
 
   return (
     <Box>
@@ -137,8 +146,8 @@ const Home = () => {
         <Grid container spacing={3}>
           {products.map((product) => (
             <Grid item xs={12} sm={6} md={4} key={product._id}>
-              <Card 
-                sx={{ 
+              <Card
+                sx={{
                   height: '100%',
                   display: 'flex',
                   flexDirection: 'column',
@@ -162,13 +171,13 @@ const Home = () => {
                     {product.description}
                   </Typography>
                   <CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
-                  <Typography variant="h6" color="primary" sx={{ mt: 2 }}>
-                    ₹{product.price}
-                  </Typography>
-                  <Typography variant="h6" color="primary" sx={{ mt: 2 }}>
-                    {product?.duration?.from} - {product?.duration?.to} Days
-                  </Typography>
-                </CardContent>
+                    <Typography variant="h6" color="primary" sx={{ mt: 2 }}>
+                      ₹{product.price}
+                    </Typography>
+                    <Typography variant="h6" color="primary" sx={{ mt: 2 }}>
+                      {product?.duration?.from} - {product?.duration?.to} Days
+                    </Typography>
+                  </CardContent>
                 </CardContent>
               </Card>
             </Grid>

@@ -49,7 +49,7 @@ const Login = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setError('');
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -69,9 +69,9 @@ const Login = () => {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
         localStorage.setItem('isLoggedIn', 'true');
-        
+
         dispatch(loginSuccess(response.data.user));
-        
+
         // Navigate based on role and return path
         const returnPath = location.state?.from;
         if (response.data.user.role === 'admin') {
